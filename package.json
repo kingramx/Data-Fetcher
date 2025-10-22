@@ -1,0 +1,21 @@
+{
+  "name": "extractor",
+  "version": "1.0.0",
+  "description": "",
+  "bin": "server.js",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.18"
+  }
+}
