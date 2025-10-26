@@ -2,7 +2,9 @@
 let rootHandle = null;
 let treeModel = null;
 let selectedFiles = new Map();
-let ignoredFolders = new Set();
+
+// === Default ignored folders ===
+let ignoredFolders = new Set([".idea", "node_modules", ".git", "migrations", "__pycache__", ".venv"]);
 
 const chooseBtn = document.getElementById('chooseBtn');
 const extractBtn = document.getElementById('extractBtn');
@@ -213,3 +215,6 @@ copyBtn.addEventListener('click', async () => {
 });
 
 saveFileBtn.addEventListener('click', saveToFile);
+
+// Render default ignored folders on load
+renderIgnoreList();
