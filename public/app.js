@@ -101,20 +101,33 @@ function renderSelectedList() {
 
 function renderTree(node, container) {
   container.innerHTML = '';
+
   const rootUl = document.createElement('ul');
-  rootUl.className = 'space-y-1';
+  rootUl.className = 'space-y-1 text-sm';
+
   function renderNode(n, parentEl) {
     const li = document.createElement('li');
+    li.className = 'select-none';
+
     const row = document.createElement('div');
-    row.className = 'flex items-start gap-2';
+    row.className = 'flex items-center gap-2 cursor-pointer hover:bg-slate-100 rounded px-1';
+
+    // icon
     const icon = document.createElement('span');
     icon.className = 'inline-block w-4 text-slate-500';
     icon.textContent = n.kind === 'directory' ? '📁' : '📄';
+    row.appendChild(icon);
+
+    // name element
+    const nameEl = document.createElement('span');
+    nameEl.textContent = n.name;
+    nameEl.className = 'text-slate-800';
+    row.appendChild(nameEl);
 
     if (n.kind === 'file') {
       const cb = document.createElement('input');
       cb.type = 'checkbox';
-      cb.className = 'mt-1';
+      cb.className = 'ml-auto';
       cb.checked = selectedFiles.has(n.path);
       cb.addEventListener('change', () => {
         if (cb.checked) selectedFiles.set(n.path, n.handle);
@@ -122,27 +135,29 @@ function renderTree(node, container) {
         renderSelectedList();
       });
       row.appendChild(cb);
-    } else {
-      const spacer = document.createElement('span');
-      spacer.className = 'inline-block w-4';
-      row.appendChild(spacer);
     }
 
-    const nameEl = document.createElement('span');
-    nameEl.textContent = n.name;
-    nameEl.className = 'text-slate-800 text-sm';
-    row.appendChild(icon);
-    row.appendChild(nameEl);
     li.appendChild(row);
 
-    if (n.kind === 'directory' && n.children.length > 0) {
+    // handle directories
+    if (n.kind === 'directory') {
       const ul = document.createElement('ul');
-      ul.className = 'ml-4 border-l pl-3 space-y-1';
+      ul.className = 'ml-5 border-l pl-3 space-y-1 hidden';
+
+      let expanded = false;
+      row.addEventListener('click', () => {
+        expanded = !expanded;
+        ul.classList.toggle('hidden', !expanded);
+        icon.textContent = expanded ? '📂' : '📁';
+      });
+
       for (const c of n.children) renderNode(c, ul);
       li.appendChild(ul);
     }
+
     parentEl.appendChild(li);
   }
+
   renderNode(node, rootUl);
   container.appendChild(rootUl);
 }
