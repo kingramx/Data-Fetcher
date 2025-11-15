@@ -10,6 +10,8 @@ const chooseBtn = document.getElementById('chooseBtn');
 const extractBtn = document.getElementById('extractBtn');
 const copyBtn = document.getElementById('copyBtn');
 const saveFileBtn = document.getElementById('saveFileBtn');
+const showTreeBtn = document.getElementById('showTreeBtn');
+
 const treeRootEl = document.getElementById('treeRoot');
 const extensionsEl = document.getElementById('extensions');
 const selectedListEl = document.getElementById('selectedList');
@@ -177,6 +179,36 @@ async function extractSelectedFiles() {
   saveFileBtn.disabled = false;
 }
 
+function buildTreeText(node, prefix = '', isLast = true) {
+  const icon = node.kind === 'directory' ? '📁' : '📄';
+  const connector = prefix ? (isLast ? '└─ ' : '├─ ') : '';
+  let lines = [`${prefix}${connector}${icon} ${node.name}`];
+
+  if (node.children && node.children.length > 0) {
+    const newPrefix = prefix + (isLast ? '   ' : '│  ');
+    const lastIndex = node.children.length - 1;
+    node.children.forEach((child, idx) => {
+      const childIsLast = idx === lastIndex;
+      lines = lines.concat(buildTreeText(child, newPrefix, childIsLast));
+    });
+  }
+
+  return lines;
+}
+
+
+function showTreeContents() {
+  if (!treeModel) {
+    alert('No folder selected yet.');
+    return;
+  }
+  const lines = buildTreeText(treeModel);
+  contentsBox.value = lines.join('\n');
+  copyBtn.disabled = false;
+  saveFileBtn.disabled = false;
+}
+
+
 async function saveToFile() {
   try {
     const saveHandle = await window.showSaveFilePicker({
@@ -204,7 +236,8 @@ chooseBtn.addEventListener('click', async () => {
     renderSelectedList();
     contentsBox.value = '';
     copyBtn.disabled = true;
-    saveFileBtn.disabled = true;
+    showTreeBtn.disabled = false;
+
   } catch (err) {
     console.warn('Folder selection canceled or not supported.', err);
   }
@@ -229,6 +262,7 @@ copyBtn.addEventListener('click', async () => {
   }
 });
 
+showTreeBtn.addEventListener('click', showTreeContents);
 saveFileBtn.addEventListener('click', saveToFile);
 
 // Render default ignored folders on load

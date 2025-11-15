@@ -82,13 +82,20 @@
 
         <!-- Extracted contents section -->
         <div class="mt-6">
-          <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
             <h3 class="text-md font-semibold">Extracted contents</h3>
-            <button id="copyBtn" 
-                    class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-sm rounded disabled:opacity-50"
-                    disabled>
-              Copy
-            </button>
+            <div class="flex gap-2">
+              <button id="showTreeBtn"
+                      class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-sm rounded disabled:opacity-50"
+                      disabled>
+                Show Tree
+              </button>
+              <button id="copyBtn"
+                      class="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-sm rounded disabled:opacity-50"
+                      disabled>
+                Copy
+              </button>
+            </div>
           </div>
           <textarea id="contentsBox"
                     class="w-full h-64 p-2 border rounded text-sm font-mono bg-gray-50 thin-scrollbar"
