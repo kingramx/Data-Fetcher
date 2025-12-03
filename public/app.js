@@ -15,6 +15,7 @@ const showTreeBtn = document.getElementById('showTreeBtn');
 const treeRootEl = document.getElementById('treeRoot');
 const extensionsEl = document.getElementById('extensions');
 const selectedListEl = document.getElementById('selectedList');
+const selectAllBtn = document.getElementById('selectAllBtn');
 const rootNameEl = document.getElementById('rootName');
 const contentsBox = document.getElementById('contentsBox');
 
@@ -236,6 +237,7 @@ chooseBtn.addEventListener('click', async () => {
     renderSelectedList();
     contentsBox.value = '';
     copyBtn.disabled = true;
+    selectAllBtn.disabled = false;
     showTreeBtn.disabled = false;
 
   } catch (err) {
@@ -261,6 +263,24 @@ copyBtn.addEventListener('click', async () => {
     alert('Copy failed.');
   }
 });
+
+function selectAllFiles(node) {
+  if (node.kind === 'file') {
+    selectedFiles.set(node.path, node.handle);
+  }
+  for (const child of node.children || []) selectAllFiles(child);
+}
+
+
+selectAllBtn.addEventListener('click', () => {
+  if (!treeModel) return;
+
+  selectedFiles.clear();
+  selectAllFiles(treeModel);
+  renderSelectedList();
+  renderTree(treeModel, treeRootEl);
+});
+
 
 showTreeBtn.addEventListener('click', showTreeContents);
 saveFileBtn.addEventListener('click', saveToFile);
