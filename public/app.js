@@ -5,6 +5,7 @@ let selectedFiles = new Map();
 
 // === Default ignored folders ===
 let ignoredFolders = new Set([".idea", "node_modules", ".git", "migrations", "__pycache__", ".venv"]);
+let expandedDirs = new Set();
 
 const chooseBtn = document.getElementById('chooseBtn');
 const extractBtn = document.getElementById('extractBtn');
@@ -180,12 +181,22 @@ function renderTree(node, container) {
       const ul = document.createElement('ul');
       ul.className = 'ml-5 border-l pl-3 space-y-1 hidden';
 
-      let expanded = false;
+      const dirPath = n.path || n.name;
+      let expanded = expandedDirs.has(dirPath);
+
+      ul.classList.toggle('hidden', !expanded);
+      icon.textContent = expanded ? '📂' : '📁';
+
       row.addEventListener('click', () => {
         expanded = !expanded;
+
+        if (expanded) expandedDirs.add(dirPath);
+        else expandedDirs.delete(dirPath);
+
         ul.classList.toggle('hidden', !expanded);
         icon.textContent = expanded ? '📂' : '📁';
       });
+
 
       for (const c of n.children) renderNode(c, ul);
       li.appendChild(ul);
