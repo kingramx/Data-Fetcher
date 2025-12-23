@@ -102,6 +102,18 @@ function renderSelectedList() {
   extractBtn.disabled = selectedFiles.size === 0;
 }
 
+function toggleDirectory(node, checked) {
+  if (node.kind === 'file') {
+    if (checked) selectedFiles.set(node.path, node.handle);
+    else selectedFiles.delete(node.path);
+    return;
+  }
+
+  for (const child of node.children || []) {
+    toggleDirectory(child, checked);
+  }
+}
+
 function renderTree(node, container) {
   container.innerHTML = '';
 
@@ -127,18 +139,39 @@ function renderTree(node, container) {
     nameEl.className = 'text-slate-800';
     row.appendChild(nameEl);
 
+    // checkbox (for file & directory)
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.className = 'ml-auto';
+
+    // وضعیت checkbox
     if (n.kind === 'file') {
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.className = 'ml-auto';
       cb.checked = selectedFiles.has(n.path);
-      cb.addEventListener('change', () => {
+    } else {
+      const files = [];
+      (function collect(node) {
+        if (node.kind === 'file') files.push(node.path);
+        (node.children || []).forEach(collect);
+      })(n);
+
+      cb.checked = files.length > 0 && files.every(p => selectedFiles.has(p));
+    }
+
+    cb.addEventListener('change', (e) => {
+      e.stopPropagation(); // جلوگیری از باز/بسته شدن فولدر
+
+      if (n.kind === 'file') {
         if (cb.checked) selectedFiles.set(n.path, n.handle);
         else selectedFiles.delete(n.path);
-        renderSelectedList();
-      });
-      row.appendChild(cb);
-    }
+      } else {
+        toggleDirectory(n, cb.checked);
+      }
+
+      renderSelectedList();
+      renderTree(treeModel, treeRootEl);
+    });
+
+    row.appendChild(cb);
 
     li.appendChild(row);
 
